@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <title>Pixel Renner Spiel</title>
+    <style>
+      /* Basic reset */
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        font-family: "Inter", "Segoe UI", "Helvetica Neue", sans-serif;
+        background-color: #f7f7f7; /* Classic white-ish background */
+      }
+
+      #game-container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background: #f7f7f7;
+        touch-action: none;
+      }
+
+      canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        background-color: transparent;
+      }
+
+      #ui-layer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center; /* Corrected 'align' to 'align-items' */
+        pointer-events: none;
+        color: #535353; /* Classic grey */
+      }
+
+      #score {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        font-size: max(12px, 3vh);
+        font-weight: 500;
+        color: #535353;
+      }
+
+      #game-message {
+        display: none;
+        font-size: max(16px, 3vh);
+        font-weight: 600;
+        text-align: center;
+        padding: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        color: #535353;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game-container">
+      <canvas id="gameCanvas"></canvas>
+      <div id="ui-layer">
+        <div id="score">0</div>
+        <div id="game-message">
+          Klick, beruer, oder drueck leertaste zum starten
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // --- 1. SETUP ---
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
+      const scoreEl = document.getElementById("score");
+      const messageEl = document.getElementById("game-message");
+
+      // --- 2. GAME STATE & SCALING VARIABLES ---
+      let player, groundY, gameSpeed, gravity, scaleFactor;
+      let obstacles = [];
+      let score = 0;
+      let gameActive = false;
+      let nextObstacleTime = 0;
+      let lastTime = 0;
+
+      const BASE_HEIGHT = 150;
+      const BASE_SPEED = 3.5;
+      const BASE_GRAVITY = 0.6;
+      const BASE_JUMP_FORCE = 11;
+      // Player base dimensions are now for the dino
+      const BASE_PLAYER_HEIGHT = 22;
+      const BASE_PLAYER_WIDTH = 20;
+      const MIN_OBSTACLE_GAP = 1400;
+      const MAX_OBSTACLE_GAP = 2800;
+      const PTERO_SPAWN_SCORE = 800; // Score when pteros start appearing
+      const PLAYER_COLOR = "#535353";
+      const OBSTACLE_COLOR = "#535353";
+
+      // --- 3. GAME CLASSES ---
+
+      /**
+       * Represents the player (T-Rex).
+       */
+      class Player {
+        constructor() {
+          this.baseWidth = BASE_PLAYER_WIDTH;
+          this.baseHeight = BASE_PLAYER_HEIGHT;
+
+          this.width = this.baseWidth * scaleFactor;
+          this.height = this.baseHeight * scaleFactor;
+
+          this.x = canvas.width * 0.1;
+          this.y = groundY - this.height;
+          this.dy = 0;
+
+          this.jumpForce = BASE_JUMP_FORCE * scaleFactor;
+          this.grounded = true;
+          this.jumpTimer = 0; // Coyote time
+
+          // Animation
+          this.runningFrame = 0;
+          this.frameTimer = 0;
+          this.animationSpeed = 8; // Lower is faster
+        }
+
+        draw() {
+          ctx.fillStyle = PLAYER_COLOR;
+
+          // --- Simple blocky T-Rex ---
+          const x = this.x;
+          const y = this.y;
+          const w = this.width;
+          const h = this.height;
+
+          // Head
+          ctx.fillRect(x + w * 0.4, y, w * 0.6, h * 0.4);
+          // Body
+          ctx.fillRect(x, y + h * 0.4, w * 0.7, h * 0.3);
+          // Tail
+          ctx.fillRect(x - w * 0.2, y + h * 0.4, w * 0.2, h * 0.15);
+
+          if (this.grounded) {
+            // Animate legs when running
+            if (this.runningFrame === 0) {
+              ctx.fillRect(x + w * 0.2, y + h * 0.7, w * 0.15, h * 0.3); // Back leg
+              ctx.fillRect(x + w * 0.5, y + h * 0.7, w * 0.15, h * 0.2); // Front leg (up)
+            } else {
+              ctx.fillRect(x + w * 0.2, y + h * 0.7, w * 0.15, h * 0.2); // Back leg (up)
+              ctx.fillRect(x + w * 0.5, y + h * 0.7, w * 0.15, h * 0.3); // Front leg
+            }
+          } else {
+            // Both legs down when jumping
+            ctx.fillRect(x + w * 0.2, y + h * 0.7, w * 0.15, h * 0.3);
+            ctx.fillRect(x + w * 0.5, y + h * 0.7, w * 0.15, h * 0.3);
+          }
+        }
+
+        jump() {
+          if (this.grounded || this.jumpTimer > 0) {
+            this.dy = -this.jumpForce;
+            this.grounded = false;
+            this.jumpTimer = 0;
+          }
+        }
+
+        update(deltaTime) {
+          if (this.grounded) {
+            this.jumpTimer = 5;
+            // Animate running
+            this.frameTimer += deltaTime;
+            if (this.frameTimer > this.animationSpeed) {
+              this.runningFrame = (this.runningFrame + 1) % 2;
+              this.frameTimer = 0;
+            }
+          } else {
+            this.jumpTimer -= 1 * deltaTime;
+          }
+
+          if (!this.grounded) {
+            this.dy += gravity * deltaTime;
+            this.y += this.dy * deltaTime;
+          }
+
+          if (this.y + this.height >= groundY) {
+            this.y = groundY - this.height;
+            this.dy = 0;
+            this.grounded = true;
+          }
+
+          this.draw();
+        }
+
+        resize() {
+          this.width = this.baseWidth * scaleFactor;
+          this.height = this.baseHeight * scaleFactor;
+          this.x = canvas.width * 0.1;
+          this.jumpForce = BASE_JUMP_FORCE * scaleFactor;
+
+          if (this.y + this.height > groundY) {
+            this.y = groundY - this.height;
+          }
+        }
+      }
+
+      /**
+       * Represents an obstacle (Cactus or Pterodactyl).
+       */
+      class Obstacle {
+        constructor(type) {
+          this.type = type;
+          this.frameTimer = 0;
+          this.currentFrame = 0;
+          this.animationSpeed = 12; // Slower for ptero
+
+          if (this.type === "cactus") {
+            this.cactusVariant = Math.floor(Math.random() * 3); // 0, 1, 2
+
+            if (this.cactusVariant === 0) {
+              // Small single
+              this.baseWidth = 8;
+              this.baseHeight = 18;
+            } else if (this.cactusVariant === 1) {
+              // Double
+              this.baseWidth = 16;
+              this.baseHeight = 18;
+            } else {
+              // Tall single
+              this.baseWidth = 8;
+              this.baseHeight = 25;
+            }
+
+            this.width = this.baseWidth * scaleFactor;
+            this.height = this.baseHeight * scaleFactor;
+            this.y = groundY - this.height;
+          } else if (this.type === "ptero") {
+            this.baseWidth = 22;
+            this.baseHeight = 15;
+            this.width = this.baseWidth * scaleFactor;
+            this.height = this.baseHeight * scaleFactor;
+
+            // Random flight height
+            this.flightLevel = Math.floor(Math.random() * 3); // 0, 1, 2
+            this.y = this.calculateFlightY();
+          }
+
+          this.x = canvas.width;
+        }
+
+        calculateFlightY() {
+          if (this.flightLevel === 0) {
+            // Low
+            return (
+              groundY - this.height - BASE_PLAYER_HEIGHT * 0.8 * scaleFactor
+            );
+          } else if (this.flightLevel === 1) {
+            // Middle
+            return (
+              groundY - this.height - BASE_PLAYER_HEIGHT * 1.5 * scaleFactor
+            );
+          } else {
+            // High
+            return (
+              groundY - this.height - BASE_PLAYER_HEIGHT * 2.2 * scaleFactor
+            );
+          }
+        }
+
+        draw() {
+          if (this.type === "cactus") {
+            this.drawCactus();
+          } else if (this.type === "ptero") {
+            this.drawPtero();
+          }
+        }
+
+        drawCactus() {
+          ctx.fillStyle = OBSTACLE_COLOR;
+          const x = this.x;
+          const y = this.y;
+          const w = this.width;
+          const h = this.height;
+
+          if (this.cactusVariant === 0) {
+            // Small single
+            ctx.fillRect(x, y, w, h);
+          } else if (this.cactusVariant === 1) {
+            // Double
+            ctx.fillRect(x, y, w * 0.5, h); // Left
+            ctx.fillRect(x + w * 0.5, y + h * 0.2, w * 0.5, h * 0.8); // Right
+          } else {
+            // Tall single
+            ctx.fillRect(x, y, w, h);
+          }
+        }
+
+        drawPtero() {
+          ctx.fillStyle = OBSTACLE_COLOR;
+          const x = this.x;
+          const y = this.y;
+          const w = this.width;
+          const h = this.height;
+
+          // Body
+          ctx.fillRect(x, y + h * 0.3, w * 0.8, h * 0.4);
+          // Head
+          ctx.fillRect(x + w * 0.8, y + h * 0.3, w * 0.2, h * 0.2);
+
+          if (this.currentFrame === 0) {
+            // Wings up
+            ctx.fillRect(x + w * 0.2, y, w * 0.4, h * 0.3);
+          } else {
+            // Wings down
+            ctx.fillRect(x + w * 0.2, y + h * 0.7, w * 0.4, h * 0.3);
+          }
+        }
+
+        update(deltaTime) {
+          this.x -= gameSpeed * deltaTime;
+
+          if (this.type === "ptero") {
+            this.frameTimer += deltaTime;
+            if (this.frameTimer > this.animationSpeed) {
+              this.currentFrame = (this.currentFrame + 1) % 2;
+              this.frameTimer = 0;
+            }
+          }
+
+          this.draw();
+        }
+
+        resize() {
+          this.width = this.baseWidth * scaleFactor;
+          this.height = this.baseHeight * scaleFactor;
+
+          if (this.type === "cactus") {
+            this.y = groundY - this.height;
+          } else if (this.type === "ptero") {
+            this.y = this.calculateFlightY();
+          }
+        }
+      }
+
+      // --- 4. GAME LOGIC FUNCTIONS ---
+
+      function gameLoop(timestamp) {
+        if (!gameActive) return;
+
+        const deltaTime = (timestamp - lastTime) / (1000 / 60);
+        lastTime = timestamp;
+        const effectiveDelta = Math.min(deltaTime, 3);
+
+        requestAnimationFrame(gameLoop);
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        drawGround();
+        player.update(effectiveDelta);
+        updateObstacles(effectiveDelta);
+        updateScore(effectiveDelta);
+      }
+
+      function updateObstacles(deltaTime) {
+        if (Date.now() > nextObstacleTime) {
+          let obstacleType = "cactus";
+          // Check if score is high enough and randomly spawn ptero
+          if (score > PTERO_SPAWN_SCORE && Math.random() < 0.25) {
+            obstacleType = "ptero";
+          }
+
+          obstacles.push(new Obstacle(obstacleType));
+
+          let gapMultiplier = 1 + score / 10000; // Speed up spawns slightly
+          gapMultiplier = Math.min(gapMultiplier, 1.8);
+          const minGap = MIN_OBSTACLE_GAP / gapMultiplier;
+          const maxGap = MAX_OBSTACLE_GAP / gapMultiplier;
+
+          nextObstacleTime =
+            Date.now() + minGap + Math.random() * (maxGap - minGap);
+        }
+
+        for (let i = obstacles.length - 1; i >= 0; i--) {
+          let o = obstacles[i];
+          o.update(deltaTime);
+
+          // AABB Collision Check
+          if (
+            player.x < o.x + o.width &&
+            player.x + player.width > o.x &&
+            player.y < o.y + o.height &&
+            player.y + player.height > o.y
+          ) {
+            endGame();
+            return;
+          }
+
+          if (o.x + o.width < 0) {
+            obstacles.splice(i, 1);
+          }
+        }
+      }
+
+      function drawGround() {
+        ctx.fillStyle = "#535353"; // Ground line color
+        ctx.fillRect(0, groundY, canvas.width, 1); // 1px line
+      }
+
+      function updateScore(deltaTime) {
+        score += 1 * deltaTime;
+        scoreEl.textContent = Math.floor(score / 10)
+          .toString()
+          .padStart(5, "0");
+      }
+
+      function startGame() {
+        if (gameActive) return;
+
+        score = 0;
+        obstacles = [];
+        gameActive = true;
+        messageEl.style.display = "none";
+        nextObstacleTime = Date.now() + 1000;
+
+        player = new Player();
+
+        lastTime = performance.now();
+        gameLoop(lastTime);
+      }
+
+      function endGame() {
+        gameActive = false;
+        messageEl.innerHTML = `Game Over!<br>Score: ${Math.floor(
+          score / 10
+        )}<br>Click, Tap, or Space to Restart`;
+        messageEl.style.display = "block";
+      }
+
+      // --- 5. RESIZE HANDLER ---
+
+      function handleResize() {
+        const wasActive = gameActive;
+        gameActive = false;
+
+        const w = canvas.clientWidth;
+        const h = canvas.clientHeight;
+
+        canvas.width = w;
+        canvas.height = h;
+
+        scaleFactor = canvas.height / BASE_HEIGHT;
+
+        // Increase game speed based on width, too (makes it harder on wide screens)
+        let widthScale = Math.min(canvas.width / (BASE_HEIGHT * 6), 1.5);
+        gameSpeed = BASE_SPEED * scaleFactor * widthScale;
+
+        gravity = BASE_GRAVITY * scaleFactor;
+        groundY = canvas.height * 0.9;
+
+        if (player) {
+          player.resize();
+        } else {
+          player = new Player();
+        }
+
+        obstacles.forEach((o) => o.resize());
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        drawGround();
+        player.draw();
+        obstacles.forEach((o) => o.draw());
+
+        if (wasActive) {
+          gameActive = true;
+          lastTime = performance.now();
+          gameLoop(lastTime);
+        } else {
+          messageEl.style.display = "block";
+        }
+      }
+
+      // --- 6. EVENT LISTENERS ---
+
+      function handleInput(e) {
+        e.preventDefault();
+
+        if (!gameActive) {
+          startGame();
+        } else {
+          player.jump();
+        }
+      }
+
+      window.addEventListener("resize", handleResize);
+
+      window.addEventListener("keydown", (e) => {
+        if (e.code === "Space" || e.code === "ArrowUp") {
+          handleInput(e);
+        }
+      });
+
+      const gameContainer = document.getElementById("game-container");
+      gameContainer.addEventListener("mousedown", handleInput);
+      gameContainer.addEventListener("touchstart", handleInput, {
+        passive: false,
+      });
+
+      // --- 7. INITIALIZE ---
+      handleResize();
+      messageEl.style.display = "block";
+    </script>
+  </body>
+</html>

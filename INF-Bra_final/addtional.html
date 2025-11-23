@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>additional</title>
+    <link rel="stylesheet" href="Mustermann_Max.css" />
+  </head>
+  <body>
+    <header>
+      <h1 id="titel_de">Mein Projekt</h1>
+      <h1 id="titel_en" style="display: none">My Project</h1>
+    </header>
+
+    <nav>
+      <button onclick="changeLang()">Sprache / Language</button>
+    </nav>
+
+    <section>
+      <h2 id="gruss_de">Willkommen</h2>
+      <h2 id="gruss_en" style="display: none">Welcome</h2>
+
+      <p id="txt1_de">sollte etawas fehlen dann gibt es es hier</p>
+      <p id="txt1_en" style="display: none">
+        in casse somethings missing, its here
+      </p>
+
+      <h3 id="list_de">Getestete Browser:</h3>
+      <h3 id="list_en" style="display: none">Tested Browsers:</h3>
+      <ul>
+        <li>Firefox</li>
+        <li>Chrome</li>
+        <li>Edge</li>
+      </ul>
+
+      <br />
+
+      <button onclick="meldung1()">Button 1</button>
+      <button onclick="meldung2()">Button 2</button>
+    </section>
+
+    <footer>
+      <p>Leon Kuehn</p>
+      <a
+        href="https://github.com/fussliebhaber/Games---made-in-JavaScript-school-project"
+        >Link zu Github</a
+      >
+    </footer>
+
+    <script>
+      function meldung1() {
+        alert("Hallo");
+      }
+
+      function meldung2() {
+        alert("Tschüss");
+      }
+
+      function changeLang() {
+        var deIDs = ["titel_de", "gruss_de", "txt1_de", "txt2_de", "list_de"];
+        var enIDs = ["titel_en", "gruss_en", "txt1_en", "txt2_en", "list_en"];
+
+        var status = document.getElementById("titel_de").style.display;
+
+        if (status === "none") {
+          for (var i = 0; i < deIDs.length; i++) {
+            document.getElementById(deIDs[i]).style.display = "block";
+            document.getElementById(enIDs[i]).style.display = "none";
+          }
+        } else {
+          for (var i = 0; i < deIDs.length; i++) {
+            document.getElementById(deIDs[i]).style.display = "none";
+            document.getElementById(enIDs[i]).style.display = "block";
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

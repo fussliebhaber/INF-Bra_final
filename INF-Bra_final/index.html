@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TGI11 INF Projekt</title>
+    <link rel="icon" href="icons/code-optimization-xxl.png" />
+
+    <!--Google Fonts--->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inconsolata:wdth,wght@112.5,200..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!--stylesheet link-->
+    <link rel="stylesheet" href="css/header.css" />
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/body.css" />
+    <link rel="stylesheet" href="css/settings.css" />
+    <link rel="stylesheet" href="css/history.css" />
+    <link rel="stylesheet" href="css/scrollbar.css" />
+    <!--Font Awesome-->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
+    />
+  </head>
+
+  <body>
+    <header class="header">
+      <button id="homepage" class="header-left">
+        <img
+          class="logo-icon"
+          src="icons/code-optimization-xxl.png
+          "
+          alt="home-icon"
+        />
+        <h1 id="title" class="title">Games - Made in Javascript</h1>
+      </button>
+
+      <div class="header-right">
+        <!--lagnguage Button-->
+        <a href="https://www.tgi-cs.site/deutsch.html" class="language">
+          <i class="fa fa-language" aria-hidden="true"></i>
+        </a>
+        <!--Settings Button-->
+        <button
+          onclick="
+          addMessageConsole(`opened settings`, `Einstellungen geöffnet`);
+            let el=document.getElementById('settings-overlay');
+            el.style.display = (el.style.display==='flex' ? 'none' : 'flex');"
+          class="settings-btn"
+        >
+          <i class="fas fa-sliders"></i>
+        </button>
+      </div>
+    </header>
+
+    <!--Games Sidebar-->
+
+    <main class="main">
+      <div class="nav">
+        <button id="game1" class="game1 statsopener">
+          <div class="game-name-top game1-top">snake</div>
+          <div class="game-png">
+            <img
+              style="width: 5rem"
+              src="icons/snake.png"
+              alt="sanke png error"
+            />
+          </div>
+        </button>
+        <button id="game2" class="game2 statsopener">
+          <div class="game-name-top game2-top">Dinosaur Game</div>
+          <div class="game-png">
+            <img
+              style="width: 5.3rem"
+              src="icons/Chromium_T-Rex-error-offline.png"
+              alt="flappy png error"
+            />
+          </div>
+        </button>
+        <button id="game3" class="game3 statsopener">
+          <div class="game-name-top game3-top">tic-tac-toe</div>
+          <div class="game-png">
+            <img
+              style="width: 5rem"
+              src="icons/icons8-tic-tac-toe-100.png"
+              alt="ttt png error"
+            />
+          </div>
+        </button>
+        <button id="game4" class="game4 statsopener">
+          <div id="RPS" class="game-name-top game4-top">RPS</div>
+          <div class="game-png">
+            <img
+              style="width: 4.3rem"
+              src="icons/rock-paper-scissors.png"
+              alt="rps png error"
+            />
+          </div>
+        </button>
+      </div>
+      <!--game / main display-->
+      <div class="game">
+        <iframe
+          id="iframe-game"
+          class="test"
+          src="https://1drv.ms/p/c/25c3ef05481f4fde/IQQ7PFqJ2omsTa2p57JnEB8LAUAE9m_oLMgpz07Ukq8lqLA?em=2&amp;wdAr=1.7777777777777777"
+          width="100%"
+          height="100%"
+          frameborder="0px"
+          >Dies ist ein eingebettetes
+          <a target="_blank" href="https://office.com">Microsoft Office</a
+          >-Präsentation, unterstützt von
+          <a target="_blank" href="https://office.com/webapps">Office</a>
+
+          >
+        </iframe>
+      </div>
+      <!--stats-->
+      <div class="stats">
+        <!--qr code pc-->
+        <img id="qrCode" class="qrCode" src="icons/Pi7_Download (1).png" />
+        <!--ranking-->
+        <div class="ranking">
+          <div id="leaderbaord" class="leaderbaord-top">
+            Dino' - Leaderboard
+          </div>
+          <div style="display: flex; width: 100%; background-color: #c29453">
+            <div class="ranekd-top-categorys">Rank</div>
+            <div class="ranekd-top-categorys">Name</div>
+            <div class="ranekd-top-categorys">Score</div>
+          </div>
+
+          <ol style="display: flex; width: 100%; margin-top: 1rem">
+            <div class="ranekd-top-categorys">1</div>
+            <div class="ranekd-top-categorys">Limit</div>
+            <div class="ranekd-top-categorys">99,999</div>
+          </ol>
+          <ol style="display: flex; width: 100%; margin-top: 1rem">
+            <div class="ranekd-top-categorys">2</div>
+            <div class="ranekd-top-categorys">Jonas</div>
+            <div class="ranekd-top-categorys">7000</div>
+          </ol>
+          <ol style="display: flex; width: 100%; margin-top: 1rem">
+            <div class="ranekd-top-categorys">3</div>
+            <div class="ranekd-top-categorys">Leon</div>
+            <div class="ranekd-top-categorys">3282</div>
+          </ol>
+          <ol style="display: flex; width: 100%; margin-top: 1rem">
+            <div class="ranekd-top-categorys">4</div>
+            <div class="ranekd-top-categorys">Ivan</div>
+            <div class="ranekd-top-categorys">2900</div>
+          </ol>
+          <ol id="dinu-no-ipad" style="width: 100%; margin-top: 1rem">
+            <div class="ranekd-top-categorys">5</div>
+            <div class="ranekd-top-categorys">Dinu</div>
+            <div class="ranekd-top-categorys">50</div>
+          </ol>
+        </div>
+
+        <!--console-->
+        <div class="console">
+          <div class="console-logs-top">console logs</div>
+          <div id="live-console"></div>
+        </div>
+      </div>
+    </main>
+
+    <!--History-btn / footer opener-->
+    <div class="history-wrapper">
+      <input type="checkbox" id="history-toggle" hidden />
+      <label class="history-button-div" for="history-toggle">
+        <span class="history-button">
+          <i class="fa-solid fa-chevron-down"></i>
+        </span>
+      </label>
+
+      <!--History / NEEEEEEEEDDDDSSSS COMPLETION footer--->
+      <div id="history" class="history">
+        <!-- <div class="history-nav">
+          <div class="page1-dark">
+            <button class="hst-nav-btn">Homepage</button>
+          </div>
+          <div class="page1-dark">
+            <button class="hst-nav-btn">Snake</button>
+          </div>
+          <div class="page1-dark">
+            <button class="hst-nav-btn">Minesweeper?</button>
+          </div>
+          <div class="page1-dark">
+            <button class="hst-nav-btn">Tic-Tac-Toe</button>
+          </div>
+          <div class="page1-dark">
+            <button class="hst-nav-btn">RPS</button>
+          </div>
+        </div> --->
+
+        <div class="hst-main">
+          <div class="div-iamges-hst">
+            <img
+              src="history/image.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">1 first sketches</p>
+          </div>
+          <div class="div-iamges-hst">
+            <img
+              src="history/New-File-1-Penpot-09-25-2025_06_28_PM.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">2 later sketches</p>
+          </div>
+          <div class="div-iamges-hst">
+            <img
+              src="history/Screenshot 2025-10-02 181155.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">
+              3 first steps (layout)
+            </p>
+          </div>
+          <div class="div-iamges-hst">
+            <img
+              src="history/Screenshot 2025-10-03 112452.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">4 layout finalization</p>
+          </div>
+          <div class="div-iamges-hst">
+            <img
+              src="history/Screenshot 2025-11-13 175022.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">5 final stage</p>
+          </div>
+          <div class="div-iamges-hst">
+            <img
+              src="history/Screenshot 2025-11-17 184534.png"
+              alt="tesewet"
+              class="images-hst"
+              id="foldfoldfold"
+            />
+            <p style="color: white" class="images-hst">6 png editing</p>
+          </div>
+        </div>
+        <footer>
+          <div class="footer-content">made by Leon, Ivan and Jonas</div>
+          <a class="footer-content" href="addtional.html"> additional</a>
+        </footer>
+      </div>
+    </div>
+
+    <!--Settings PopUp-->
+
+    <div
+      id="settings-overlay"
+      class="settings-overlay"
+      onclick="addMessageConsole(`closed settings`, `Einstellungen geschlossen`); if(event.target===this) this.style.display='none';"
+    >
+      <div class="settings-box">
+        <h2 id="settings">Settings</h2>
+        <label class="settings-box-label"
+          ><input type="checkbox" /> Dark Mode off (beta)</label
+        >
+        <label class="settings-box-label"
+          ><input type="checkbox" /> Sound off (beta)</label
+        >
+        <label class="mobile-language"><input type="checkbox" /> German</label>
+        <div class="href-flex">
+          <a class="credits" target="_blank" href="additional/sources.txt"
+            >Credits</a
+          >
+          <a class="impressum" target="_blank" href="additional/impressum.txt"
+            >Impressum</a
+          >
+          <a
+            class="credits"
+            target="_blank"
+            href="https://github.com/fussliebhaber/Games---made-in-JavaScript-school-project"
+            >GitHub</a
+          >
+        </div>
+        <button
+          class="settings-close"
+          onclick="document.getElementById('settings-overlay').style.display='none'"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+
+    <!--link files (js)-->
+
+    <script src="js/translate.js"></script>
+    <script src="js/game-window.js"></script>
+    <script src="js/history.js"></script>
+    <script src="js/console.js"></script>
+  </body>
+</html>

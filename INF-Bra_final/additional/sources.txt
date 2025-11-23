@@ -1,0 +1,7 @@
+icons: fontawesome
+
+website code icon:   https://www.iconsdb.com/white-icons/code-optimization-icon.html
+snake png:           https://en.grandgames.net/games/snake
+falppy bird png::    https://www.pngmart.com/image/178553
+tictactoe png:       https://icons8.com/icons/set/tic-tac--white
+rps png:             https://www.flaticon.com/free-icon/rock-paper-scissors_6726779?term=rock+paper+scissors&page=1&position=36&origin=tag&related_id=6726779

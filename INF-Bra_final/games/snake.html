@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Snake Game</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #111;
+        touch-action: none; /* prevent default scrolling on touch */
+      }
+
+      #game {
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        aspect-ratio: 1 / 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #222;
+        position: relative;
+        overflow: hidden;
+      }
+
+      canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+        background: #111;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="game">
+      <canvas id="snake"></canvas>
+    </div>
+
+    <script>
+      const canvas = document.getElementById("snake");
+      const ctx = canvas.getContext("2d");
+
+      const gridSize = 20;
+      let cellSize = 0;
+
+      let snake = [{ x: 10, y: 10 }];
+      let dir = { x: 0, y: 0 };
+      let apple = { x: 5, y: 5 };
+      let score = 0;
+
+      // Resize canvas to fit container
+      function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        cellSize = canvas.width / gridSize;
+      }
+
+      window.addEventListener("load", resizeCanvas);
+      window.addEventListener("resize", resizeCanvas);
+      window.addEventListener("orientationchange", resizeCanvas);
+
+      // Keyboard controls
+      window.addEventListener("keydown", (e) => {
+        switch (e.key) {
+          case "ArrowUp":
+            if (dir.y === 0) {
+              dir = { x: 0, y: -1 };
+            }
+            break;
+          case "ArrowDown":
+            if (dir.y === 0) {
+              dir = { x: 0, y: 1 };
+            }
+            break;
+          case "ArrowLeft":
+            if (dir.x === 0) {
+              dir = { x: -1, y: 0 };
+            }
+            break;
+          case "ArrowRight":
+            if (dir.x === 0) {
+              dir = { x: 1, y: 0 };
+            }
+            break;
+        }
+      });
+
+      // Touch controls for mobile
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      canvas.addEventListener(
+        "touchstart",
+        (e) => {
+          const touch = e.touches[0];
+          touchStartX = touch.clientX;
+          touchStartY = touch.clientY;
+        },
+        { passive: true }
+      );
+
+      canvas.addEventListener(
+        "touchend",
+        (e) => {
+          const touch = e.changedTouches[0];
+          const dx = touch.clientX - touchStartX;
+          const dy = touch.clientY - touchStartY;
+
+          if (Math.abs(dx) > Math.abs(dy)) {
+            if (dx > 0 && dir.x === 0) dir = { x: 1, y: 0 };
+            if (dx < 0 && dir.x === 0) dir = { x: -1, y: 0 };
+          } else {
+            if (dy > 0 && dir.y === 0) dir = { x: 0, y: 1 };
+            if (dy < 0 && dir.y === 0) dir = { x: 0, y: -1 };
+          }
+        },
+        { passive: true }
+      );
+
+      // Game loop
+      function gameLoop() {
+        const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+        snake.unshift(head);
+
+        // eat apple
+        if (head.x === apple.x && head.y === apple.y) {
+          score++;
+          apple = {
+            x: Math.floor(Math.random() * gridSize),
+            y: Math.floor(Math.random() * gridSize),
+          };
+        } else {
+          snake.pop();
+        }
+
+        // Collision detection
+        if (
+          head.x < 0 ||
+          head.x >= gridSize ||
+          head.y < 0 ||
+          head.y >= gridSize ||
+          snake.slice(1).some((s) => s.x === head.x && s.y === head.y)
+        ) {
+          snake = [{ x: 10, y: 10 }];
+          dir = { x: 0, y: 0 };
+          apple = { x: 5, y: 5 };
+          score = 0;
+        }
+
+        draw();
+      }
+
+      function draw() {
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw apple
+        ctx.fillStyle = "red";
+        ctx.fillRect(
+          apple.x * cellSize,
+          apple.y * cellSize,
+          cellSize,
+          cellSize
+        );
+
+        // Draw snake
+        ctx.fillStyle = "lime";
+        snake.forEach((s) =>
+          ctx.fillRect(s.x * cellSize, s.y * cellSize, cellSize, cellSize)
+        );
+      }
+
+      setInterval(gameLoop, 100);
+    </script>
+  </body>
+</html>

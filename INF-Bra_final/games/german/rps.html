@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schere Stein Papier</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #121212;
+        font-family: sans-serif;
+        color: #fff;
+      }
+
+      #wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 90vmin;
+        height: 90vmin;
+        background: #1f1f1f;
+        border-radius: 10px;
+        padding: 2vmin;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.7);
+      }
+
+      h1 {
+        font-size: 5vmin;
+        margin-bottom: 2vmin;
+      }
+
+      .choices {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        margin-bottom: 5vmin;
+      }
+
+      button.choice {
+        padding: 3vmin;
+        font-size: 4vmin;
+        border: none;
+        border-radius: 10px;
+        background: #2c2c2c;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s;
+        flex: 1;
+        margin: 0 1vmin;
+      }
+
+      button.choice:hover {
+        background: #3a3a3a;
+      }
+
+      #result {
+        font-size: 4vmin;
+        margin-bottom: 3vmin;
+        text-align: center;
+      }
+
+      #score {
+        font-size: 3vmin;
+      }
+
+      #reset {
+        padding: 2vmin;
+        font-size: 3vmin;
+        border: none;
+        border-radius: 8px;
+        background: #444;
+        color: #fff;
+        cursor: pointer;
+        transition: background 0.2s;
+        width: 50%;
+      }
+
+      #reset:hover {
+        background: #666;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>Schere Stein Papier</h1>
+
+      <div class="choices">
+        <button class="choice" data-choice="rock">✊</button>
+        <button class="choice" data-choice="paper">✋</button>
+        <button class="choice" data-choice="scissors">✌️</button>
+      </div>
+
+      <div id="result">Du bist dran!</div>
+      <div id="score">Spieler: 0 | AI: 0</div>
+      <button id="reset">Zuruecksetzen</button>
+    </div>
+
+    <script>
+      const buttons = document.querySelectorAll("button");
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          console.log(
+            "You clicked me",
+            button.id,
+            "computer choice",
+            computerPlay()
+          );
+        });
+      });
+
+      function computerPlay() {
+        const choices = ["rock", "paper", "scissors"];
+        const randomChoice = Math.floor(Math.random() * choices.length);
+        return choices[randomChoice];
+      }
+
+      let playerScore = 0;
+      let aiScore = 0;
+
+      document.querySelectorAll(".choice").forEach((button) => {
+        button.addEventListener("click", () => {
+          const playerChoice = button.dataset.choice;
+          const aiChoice = computerPlay();
+          const result = determineWinner(playerChoice, aiChoice);
+
+          document.getElementById(
+            "result"
+          ).textContent = `You chose ${playerChoice} — AI chose ${aiChoice}. ${result}`;
+
+          document.getElementById(
+            "score"
+          ).textContent = `Player: ${playerScore} | AI: ${aiScore}`;
+        });
+      });
+
+      function determineWinner(player, ai) {
+        if (player === ai) return "Draw!";
+
+        if (
+          (player === "rock" && ai === "scissors") ||
+          (player === "paper" && ai === "rock") ||
+          (player === "scissors" && ai === "paper")
+        ) {
+          playerScore++;
+          return "You win!";
+        } else {
+          aiScore++;
+          return "AI wins!";
+        }
+      }
+
+      document.getElementById("reset").addEventListener("click", () => {
+        playerScore = 0;
+        aiScore = 0;
+        document.getElementById("result").textContent = "Make your move!";
+        document.getElementById("score").textContent = "Player: 0 | AI: 0";
+      });
+    </script>
+  </body>
+</html>

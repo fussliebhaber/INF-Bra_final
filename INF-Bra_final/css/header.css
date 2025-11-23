@@ -1,0 +1,176 @@
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  margin-bottom: 0.2rem;
+  padding-left: 2.2rem;
+  padding-right: 2.2rem;
+  background-color: rgb(152, 12, 12);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  background-color: rgba(255, 0, 0, 0);
+  border-width: 0px;
+  cursor: pointer;
+  transition: 0.35s;
+}
+
+.header-left:hover {
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 10px;
+  transition: 0.35s;
+}
+
+.title {
+  padding: 0.2rem;
+  padding-left: 0.4rem;
+  padding-right: 1.4rem;
+  border: none;
+  color: #f1f1f1;
+  font-size: 1.3rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  background-color: rgba(255, 0, 0, 0);
+}
+
+.language {
+  padding: 0.2rem;
+  padding-left: 0.65rem;
+  padding-right: 0.65rem;
+  border: none;
+  color: rgb(241, 241, 241, 0.75);
+  font-size: 2rem;
+  cursor: pointer;
+  background-color: rgba(255, 255, 255, 0);
+  border-radius: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: 0.25s;
+  text-align: center;
+  justify-self: center;
+}
+
+.language:hover,
+.settings-btn:hover {
+  transition: 0.35s;
+  background-color: rgba(0, 0, 0, 0.35);
+}
+
+.settings-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+  padding-top: 0.2rem;
+  padding-bottom: 0.2rem;
+  border-radius: 10px;
+  margin-left: 1rem;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.75);
+  transition: transform 0.2s ease;
+}
+
+.logo-icon {
+  width: 2rem;
+  margin-right: 1rem;
+}
+
+/*=============
+MOBILE SUPPORT
+==============*/
+
+@media (max-width: 767px) {
+  .header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.2rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    background-color: rgb(152, 12, 12);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+  }
+
+  .title {
+    padding: 0px;
+    padding-left: 0px;
+    padding-right: 0px;
+    border: none;
+    color: #f1f1f1;
+    font-size: 0.9rem;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: 0.25s;
+    box-shadow: 0 4px 1px rgba(0, 0, 0, 0);
+    text-align: center;
+  }
+
+  .language {
+    display: none;
+  }
+
+  .title:hover {
+    box-shadow: none;
+    transition: 0.35s;
+    background-color: rgba(0, 0, 0, 0);
+  }
+
+  .settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+
+    margin-left: 1rem;
+    font-size: 1.5rem;
+    color: rgba(255, 255, 255, 0.75);
+    transition: transform 0.2s ease;
+  }
+
+  .settings-btn:hover {
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 100%;
+  }
+
+  .logo-icon {
+    width: 1.5rem;
+    margin-right: 0.3rem;
+  }
+}
